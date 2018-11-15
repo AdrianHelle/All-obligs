@@ -1,1 +1,21 @@
 
+Read fixed file format
+The CDC web-page contains data on US births.
+
+
+Download the 2017 US Data (zip), and the User’s Guide (pdf).
+
+
+Note the fixed positions for each variable, and read the file into R. There are several packages that reads fixed format files. A discussion on the topic is found here. An example reading another CDC file is found here and here.
+
+Questions to answer
+
+What is the proportion of boys to girls?
+
+What is the average birth weight in grams?
+
+Make a density plot on the birth weight between boys and girls. Is it different?
+
+Does the average birth weight vary by month?
+
+Published by Google Drive–Report Abuse–Updated automatically every 5 minutes
