@@ -1,0 +1,162 @@
+---
+title: "ob_3"
+author: "Adrian"
+date: "7 oktober 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("PxWebApiData", repos = "https://cran.r-project.org/package=PxWebApiData")
+install.packages("tidyquant", repos = "https://cran.r-project.org/package=tidyquant")
+library(readr)
+library(knitr)
+library(tidyquant)
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(PxWebApiData)
+options(encoding="UTF-8")
+```
+Getting data from every county
+```{r}
+hvert_fylke <- ApiData("http://data.ssb.no/api/v0/dataset/95274.json?lang=no", getDataByGET = TRUE, col_types = cols(`måned` = col_date(format = "%Y%m")))
+```
+Doing some changes to make it easier to read: 
+```{r}
+hvert_fylke <- hvert_fylke[[1]]
+hvert_fylke<-subset(hvert_fylke, value>0)
+names(hvert_fylke) <-c("region", "date", "statistikkvariabel", "value")
+hvert_fylke
+```
+```{r}
+hvert_fylke <- separate(hvert_fylke, date, c("year", "month"), sep = "M")
+hvert_fylke <- unite(hvert_fylke, date, c("year", "month"), sep = "-")
+```
+From "long" to "wide"
+```{r}
+hvert_fylke <- spread(hvert_fylke, statistikkvariabel, value)
+```
+Fixing the date format
+```{r}
+hvert_fylke <- mutate(hvert_fylke, date= as.Date(date, format= "%Y"))
+nytid <- seq(as.Date("1985-01-01"), as.Date("2018-07-01"), by = "months")
+repnytid <- rep(nytid, length.out = 7750)
+hvert_fylke$date <- repnytid
+```
+Removing unnecessary variables. 
+```{r}
+names(hvert_fylke) <-c("region", "date", "rom", "senger", "pris")
+hvert_fylke$rom <- NULL 
+hvert_fylke$senger <- NULL
+hvert_fylke<-subset(hvert_fylke, pris > 0)
+names(hvert_fylke) <-c("region", "date", "fylkepris")
+```
+Making a ggplot from 1985 to 2018
+```{r}
+min <- as.Date("1985-01-01")
+max <- as.Date("2018-07-01")
+
+
+ggplot2::ggplot(hvert_fylke, aes(x = fylkepris, y = region)) +
+  geom_line(color = "#00AFBB")
+```
+
+Svalberg is the most expensive out of all the counties. 
+
+
+#Doing the same thing with the entire country. 
+Getting data: 
+```{r}
+land <- ApiData("http://data.ssb.no/api/v0/dataset/95276.json?lang=no", getDataByGET = TRUE)
+```
+Making "month" to "date"
+```{r}
+hele_landet <- land[[1]]
+hele_landet<-subset(hele_landet, value>0)
+names(hele_landet) <-c("region", "date", "statistikkvariabel", "value")
+hele_landet
+```
+Seperate M, like I did with county. 
+```{r}
+hele_landet <- separate(hele_landet, date, c("year", "month"), sep = "M")
+hele_landet <- unite(hele_landet, date, c("year", "month"), sep = "-")
+```
+
+Changes from "long" to "wide" here too
+```{r}
+hele_landet <- spread(hele_landet, statistikkvariabel, value)
+```
+using nytid to fix date
+```{r}
+hele_landet <- mutate(hele_landet, date= as.Date(date, format= "%Y"))
+nytid <- seq(as.Date("1985-01-01"), as.Date("2018-07-01"), by = "months")
+repnytid <- rep(nytid, length.out = 404)
+hele_landet$date <- repnytid
+```
+
+make sure I only have "pris per rom" and "dato", removing all the 0 values
+```{r}
+names(hele_landet) <-c("region", "date", "rom", "senger", "pris")
+hele_landet$region <- NULL
+hele_landet$rom <- NULL
+hele_landet$senger <- NULL
+hele_landet<-subset(hele_landet, pris > 0)
+names(hele_landet) <-c("date", "prisnorge")
+```
+Looking over the data using "head", "glimpse" and "tail".
+```{r}
+head(hele_landet, 35)
+tail(hele_landet, 35)
+glimpse(hele_landet)
+```
+now to make a ggplot for "hele_landet"
+```{r}
+ggplot2::ggplot(hele_landet, aes(x = date, y = prisnorge)) +
+  geom_line(color = "#E7B800")
+```
+
+
+Now to merge both datas and see if there is any correlation between "hele_landet" and "hvert_fylke"
+```{r}
+hvert_fylke$region <- NULL
+merge <- left_join(hvert_fylke, hele_landet, by=c("date"))
+```
+
+```{r}
+merge.long <- merge %>% gather(key = "variable", value = "pris", -date)
+head(merge.long)
+```
+
+
+
+
+
+
+
+
+making a ggplot for the entire country. 
+```{r}
+ggplot(merge.long, aes(x = variable, y = pris)) + 
+  geom_line(aes(color = variable)) +
+  scale_color_manual(values = c("#00AFBB", "#E7B800"))
+```
+```{r}
+ggplot(merge.long, aes(x = date, y = pris)) + 
+  geom_line(aes(color = variable)) +
+  scale_color_manual(values = c("#00AFBB", "#E7B800"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
