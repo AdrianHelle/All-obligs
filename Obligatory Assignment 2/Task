@@ -1,1 +1,55 @@
+Task 1 - Reading Static web-pages
+Reading Static web-pages
 
+At the web page: https://www.netfonds.no/quotes/kurs.php
+
+
+
+
+
+You will find stock prices, both intra-day, and historical daily prices. If you select a company, e.g. Equinor, you will find historical daily data on the link “Dataeksport”.
+
+
+
+
+
+Click on the link “Historikk” csv.
+
+
+
+
+And you will be sent to a static web-page, updated daily with data on trades of Equinor.
+
+
+Copy the url from the web-page, it should read: https://www.netfonds.no/quotes/paperhistory.php?paper=EQNR.OSE&csv_format=csv
+
+
+In RStudio, import these data by using the “Import Dataset” button “From Text”:
+
+
+
+
+Do the following (using the tidyverse):
+
+Download the Equinor data.
+Format the “quote_date” to a date format.
+
+Download and process similar data from Norsk Hydro (ticker NHY).
+Merge the two data frames, and make a ggplot-plot of the close price of both companies in the same plot.
+
+It should look something like this:
+
+
+
+
+
+Some plotting tips is found here.
+
+
+Some additional “Bells & Whistles”:
+
+
+Use January 4, 2010 as the starting point of the plot.
+Calculate the returns (i.e., the log differential) on the price of each stock, and plot the cumulative returns.
+Use January 4, 2010 as the starting point of the cumulative plot, i.e. it is equal to 100.
+Published by Google Drive–Report Abuse–Updated automatically every 5 minutes
