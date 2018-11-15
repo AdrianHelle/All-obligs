@@ -1,1 +1,20 @@
+Reading data from SSB (API or static web-scraping)
+
+You will find the data here: http://data.ssb.no/api/v0/dataset/
+
+
+Download table: 95274 (by county) and 95276 (the whole country). This is data on percentage capacity utilization on beds (“Kapasitetsutnytting av senger (prosent)"), percentage capacity utilization on rooms ("Kapasitetsutnytting av rom (prosent)") and price per room ("Pris per rom”).
+
+
+Note that SSB uses “,” as a decimal point instead of “.”!
+
+
+You could either scrape it as a static web-site, or use an API using SSB’s R package PxWebApiData or scrape a JSON object. Links found here.
+
+
+Merge the two dataframes, clean the data (i.e, remove zero prices) and calculate the difference between county average room price and the national average. What counties are above/below the national average? Is there any relationship between capacity and price?
+
+
+Prepare this task before the lecture Monday October 1st at 14:00. Store your code in your Github repository, and submit the link in Canvas.
+
 
